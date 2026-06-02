@@ -29,9 +29,9 @@ export function PecoLogo({
   return (
     <div
       className={`inline-flex flex-col leading-none ${s.gap} ${className}`}
-      aria-label="PECO Smart Pet Medical"
+      aria-label="SPM Smart Pet Medical"
     >
-      <span className={`font-bold tracking-tight ${s.wordmark} ${wordmarkColor}`}>PECO</span>
+      <span className={`font-bold tracking-tight ${s.wordmark} ${wordmarkColor}`}>SPM</span>
       {subtitle ? (
         <span className={`font-medium tracking-wide uppercase ${s.subtitle} ${subtitleColor}`}>
           {subtitle}
