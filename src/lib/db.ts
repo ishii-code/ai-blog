@@ -37,10 +37,32 @@ function createPool(): Pool {
   if (!connectionString) {
     throw new Error("環境変数 DATABASE_URL が設定されていません。");
   }
+
+  // 接続形式に応じて SSL を自動切り替えする。
+  // - Unix socket 接続（Cloud Run + Cloud SQL）: 既に暗号化済みのため SSL を無効化。
+  //   socket を指定すると Postgres は "does not support SSL connections" を返す。
+  // - localhost / 127.0.0.1（ローカル DB / Auth Proxy）: 平文 TCP のため SSL 無効。
+  // - それ以外（パブリック IP への TCP 直結）: Cloud SQL は TLS 必須のため SSL 有効。
+  //
+  // 注意: Cloud Run の DATABASE_URL は host が URL エンコードされる
+  // （例 `?host=%2Fcloudsql%2F...`）。デコード後の文字列でも判定する。
+  const haystack = connectionString.toLowerCase();
+  let decoded = haystack;
+  try {
+    decoded = decodeURIComponent(haystack);
+  } catch {
+    // パスワード等に不正な % が含まれる場合はデコード前の文字列で判定する。
+  }
+  const isSocketConnection =
+    decoded.includes("/cloudsql/") || decoded.includes("host=/");
+  const isLocalhost =
+    decoded.includes("localhost") || decoded.includes("127.0.0.1");
+  const useSsl = !isSocketConnection && !isLocalhost;
+
   return new Pool({
     connectionString,
-    // Cloud SQL の証明書チェーンを厳密検証しない（マネージド証明書のため）。
-    ssl: { rejectUnauthorized: false },
+    // パブリック IP TCP 直結時のみ TLS を有効化（マネージド証明書のため厳密検証はしない）。
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
     max: 5,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
