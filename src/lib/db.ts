@@ -26,6 +26,7 @@ interface BlogArticleRow extends QueryResultRow {
   structure_type: number | null;
   source_title: string | null;
   source_url: string | null;
+  cover_image_url: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -109,6 +110,7 @@ function mapRowToArticle(row: BlogArticleRow): Article {
     structureType: row.structure_type,
     sourceTitle: row.source_title,
     sourceUrl: row.source_url,
+    coverImageUrl: row.cover_image_url,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   };
@@ -121,6 +123,7 @@ function mapRowToSummary(row: BlogArticleRow): ArticleSummary {
     excerpt: buildExcerpt(row.content),
     topicTags: toStringArray(row.topic_tags),
     structureType: row.structure_type,
+    coverImageUrl: row.cover_image_url,
     createdAt: row.created_at.toISOString(),
   };
 }
@@ -169,7 +172,7 @@ export async function listArticles(
 
   const sql = `
     SELECT id, title, content, published, topic_tags, named_entities,
-           structure_type, source_title, source_url, created_at, updated_at
+           structure_type, source_title, source_url, cover_image_url, created_at, updated_at
     FROM blog_articles
     ${where}
     ORDER BY created_at DESC, id DESC
@@ -193,7 +196,7 @@ export async function getArticle(
 
   const sql = `
     SELECT id, title, content, published, topic_tags, named_entities,
-           structure_type, source_title, source_url, created_at, updated_at
+           structure_type, source_title, source_url, cover_image_url, created_at, updated_at
     FROM blog_articles
     WHERE id = $1 ${publishedOnly ? "AND published = true" : ""}
     LIMIT 1

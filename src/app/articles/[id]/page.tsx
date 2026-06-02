@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getArticle } from "@/lib/db";
@@ -62,6 +63,19 @@ export default async function ArticlePage({ params }: PageProps) {
       </nav>
 
       <article>
+        {article.coverImageUrl ? (
+          <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-peco-lg bg-peco-surface-muted shadow-peco-sm">
+            <Image
+              src={article.coverImageUrl}
+              alt={`${article.title} のカバー画像`}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 760px"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
+
         <header className="mb-8 border-b border-peco-border pb-6">
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-peco-gray-900 md:text-4xl">
             {article.title}

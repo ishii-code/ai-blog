@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ArticleSummary } from "@/types";
 import { formatDate, toDateTimeAttr, structureLabel } from "@/lib/format";
 
@@ -13,6 +14,25 @@ export function ArticleCard({ article }: { article: ArticleSummary }) {
 
   return (
     <article className="group flex h-full flex-col rounded-peco-lg border border-peco-border bg-peco-surface shadow-peco-sm transition-shadow hover:shadow-peco-md">
+      {article.coverImageUrl ? (
+        <Link
+          href={`/articles/${article.id}`}
+          className="block overflow-hidden rounded-t-peco-lg"
+          tabIndex={-1}
+          aria-hidden
+        >
+          <div className="relative aspect-[16/9] w-full bg-peco-surface-muted">
+            <Image
+              src={article.coverImageUrl}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+        </Link>
+      ) : null}
+
       <Link
         href={`/articles/${article.id}`}
         className="flex flex-1 flex-col gap-3 rounded-peco-lg p-5"

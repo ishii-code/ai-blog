@@ -23,6 +23,8 @@ export interface Article {
   sourceTitle: string | null;
   /** 出典 URL（単一）。なければ null */
   sourceUrl: string | null;
+  /** カバー画像（DALL-E 3 自動生成）の公開 URL。なければ null */
+  coverImageUrl: string | null;
   /** ISO8601 文字列（タイムゾーン付き） */
   createdAt: string;
   updatedAt: string;
@@ -35,6 +37,7 @@ export interface ArticleSummary {
   excerpt: string;
   topicTags: string[];
   structureType: number | null;
+  coverImageUrl: string | null;
   createdAt: string;
 }
 
