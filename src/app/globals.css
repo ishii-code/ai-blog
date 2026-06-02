@@ -1,26 +1,243 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* next-themes は <html class="dark"> を付与する。class 戦略のダークモードを有効化。 */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors — exposed as bg-peco-*, text-peco-*, border-peco-* */
+  --color-peco-primary: var(--peco-primary);
+  --color-peco-primary-dark: var(--peco-primary-dark);
+  --color-peco-primary-light: var(--peco-primary-light);
+  --color-peco-primary-subtle: var(--peco-primary-subtle);
+
+  --color-peco-secondary: var(--peco-secondary);
+  --color-peco-secondary-dark: var(--peco-secondary-dark);
+  --color-peco-secondary-light: var(--peco-secondary-light);
+
+  --color-peco-success: var(--peco-success);
+  --color-peco-success-light: var(--peco-success-light);
+  --color-peco-warning: var(--peco-warning);
+  --color-peco-warning-light: var(--peco-warning-light);
+  --color-peco-danger: var(--peco-danger);
+  --color-peco-danger-light: var(--peco-danger-light);
+  --color-peco-info: var(--peco-info);
+  --color-peco-info-light: var(--peco-info-light);
+
+  --color-peco-triage-green: var(--peco-triage-green);
+  --color-peco-triage-yellow: var(--peco-triage-yellow);
+  --color-peco-triage-red: var(--peco-triage-red);
+
+  --color-peco-gray-900: var(--peco-gray-900);
+  --color-peco-gray-700: var(--peco-gray-700);
+  --color-peco-gray-500: var(--peco-gray-500);
+  --color-peco-gray-300: var(--peco-gray-300);
+  --color-peco-gray-100: var(--peco-gray-100);
+  --color-peco-gray-50: var(--peco-gray-50);
+
+  /* Surface — ライト/ダークで切り替わるカード等の面色 */
+  --color-peco-surface: var(--peco-surface);
+  --color-peco-surface-muted: var(--peco-surface-muted);
+  --color-peco-border: var(--peco-border);
+
+  /* Radius — exposed as rounded-peco-* */
+  --radius-peco-sm: var(--peco-radius-sm);
+  --radius-peco-md: var(--peco-radius-md);
+  --radius-peco-lg: var(--peco-radius-lg);
+  --radius-peco-xl: var(--peco-radius-xl);
+
+  /* Shadow — exposed as shadow-peco-* */
+  --shadow-peco-sm: var(--peco-shadow-sm);
+  --shadow-peco-md: var(--peco-shadow-md);
+  --shadow-peco-lg: var(--peco-shadow-lg);
+
+  /* Font */
+  --font-sans: var(--peco-font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ライトモードの面色トークン（tokens.css のニュートラルを利用） */
+:root {
+  --peco-surface: #ffffff;
+  --peco-surface-muted: var(--peco-gray-50);
+  --peco-border: var(--peco-gray-100);
+  /* next/font で読み込んだ Noto Sans JP を最優先で使う */
+  --peco-font-sans: var(--font-noto-sans), "Noto Sans JP", "Inter", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+/*
+ * ダークモード上書き。
+ * グレースケールを反転させることで、再利用する peco-ui コンポーネント
+ * （EmptyState / Spinner / Badge 等）も自動的にダークへ追従する。
+ */
+.dark {
+  --peco-gray-900: #F3F4F6; /* 主要テキスト（明） */
+  --peco-gray-700: #D1D5DB;
+  --peco-gray-500: #9AA3B2;
+  --peco-gray-300: #3A3A4E;
+  --peco-gray-100: #242436; /* 区切り線・薄い面 */
+  --peco-gray-50: #0E0E1A; /* ページ背景（暗） */
+
+  --peco-surface: #16161F; /* カード面 */
+  --peco-surface-muted: #1E1E2E;
+  --peco-border: #2A2A3C;
+
+  --peco-primary-subtle: #2A2410;
+  --peco-primary-light: #3A3214;
+
+  --peco-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --peco-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --peco-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    background: var(--peco-gray-50);
+    color: var(--peco-gray-900);
+    font-family: var(--peco-font-sans);
+    font-size: var(--peco-text-base);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--peco-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes peco-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.peco-spin {
+  animation: peco-spin 0.8s linear infinite;
+}
+
+@keyframes peco-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.peco-fade-in {
+  animation: peco-fade-in 240ms ease-out both;
+}
+
+/* ===== Markdown 本文（article-prose）のタイポグラフィ ===== */
+.article-prose {
+  color: var(--peco-gray-900);
+  line-height: 1.85;
+  font-size: 1.0625rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.article-prose > * + * {
+  margin-top: 1.15em;
+}
+.article-prose h1,
+.article-prose h2,
+.article-prose h3,
+.article-prose h4 {
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--peco-gray-900);
+  scroll-margin-top: 5rem;
+}
+.article-prose h1 {
+  font-size: 1.875rem;
+  margin-top: 2em;
+}
+.article-prose h2 {
+  font-size: 1.5rem;
+  margin-top: 1.8em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--peco-border);
+}
+.article-prose h3 {
+  font-size: 1.25rem;
+  margin-top: 1.5em;
+}
+.article-prose a {
+  color: var(--peco-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.article-prose a:hover {
+  color: var(--peco-secondary-dark);
+}
+.article-prose ul,
+.article-prose ol {
+  padding-left: 1.5em;
+}
+.article-prose ul {
+  list-style: disc;
+}
+.article-prose ol {
+  list-style: decimal;
+}
+.article-prose li + li {
+  margin-top: 0.4em;
+}
+.article-prose blockquote {
+  border-left: 4px solid var(--peco-primary);
+  padding: 0.25em 0 0.25em 1em;
+  color: var(--peco-gray-700);
+  background: var(--peco-surface-muted);
+  border-radius: 0 var(--peco-radius-sm) var(--peco-radius-sm) 0;
+}
+.article-prose code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9em;
+  background: var(--peco-surface-muted);
+  padding: 0.15em 0.4em;
+  border-radius: var(--peco-radius-sm);
+  border: 1px solid var(--peco-border);
+}
+.article-prose pre {
+  background: var(--peco-gray-900);
+  color: var(--peco-gray-50);
+  padding: 1em 1.2em;
+  border-radius: var(--peco-radius-md);
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+.article-prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.article-prose th,
+.article-prose td {
+  border: 1px solid var(--peco-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.article-prose th {
+  background: var(--peco-surface-muted);
+  font-weight: 600;
+}
+.article-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--peco-radius-md);
+}
+.article-prose hr {
+  border: none;
+  border-top: 1px solid var(--peco-border);
 }
